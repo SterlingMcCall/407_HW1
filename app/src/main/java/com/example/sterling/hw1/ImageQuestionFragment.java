@@ -86,7 +86,7 @@ public class ImageQuestionFragment extends Fragment implements View.OnClickListe
 
 
 
-    @SuppressWarnings("")
+    @SuppressWarnings({"NullableProblems"})
     public void onSubmit(View view) {
         if(((EditText)getView().findViewById(R.id.editText)).getText().toString().trim().toLowerCase().length() <= 0) {
             new AlertDialog.Builder(getActivity())
