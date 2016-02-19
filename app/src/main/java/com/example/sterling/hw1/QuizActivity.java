@@ -45,10 +45,6 @@ public class QuizActivity extends AppCompatActivity
         correctAnswers = 0;
     }
 
-    void onSubmit(View view) {
-
-    }
-
     @Override
     public void onFragmentInteraction(Uri uri) {
 
