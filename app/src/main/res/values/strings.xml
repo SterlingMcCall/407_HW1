@@ -3,4 +3,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="year_1402">1402</string>
+    <string name="year_1429">1429</string>
+    <string name="year_1492">1492</string>
+    <string name="year_1942">1942</string>
+    <string name="yellow">yellow</string>
 </resources>

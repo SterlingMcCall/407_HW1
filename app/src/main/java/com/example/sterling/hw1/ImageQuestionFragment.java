@@ -1,12 +1,16 @@
 package com.example.sterling.hw1;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.content.DialogInterface;
 
 
 /**
@@ -17,15 +21,17 @@ import android.view.ViewGroup;
  * Use the {@link ImageQuestionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ImageQuestionFragment extends Fragment {
+public class ImageQuestionFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "correctCount";
-    private static final String ARG_PARAM2 = "incorrectCount";
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Button submitButton;
 
     private OnFragmentInteractionListener mListener;
 
@@ -54,17 +60,51 @@ public class ImageQuestionFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        ((QuizActivity)getActivity()).addQuestion();
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_image_question, container, false);
+
+        submitButton = (Button) view.findViewById(R.id.button2);
+        submitButton.setOnClickListener(this);
+        return view;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_image_question, container, false);
+    public void onClick(View v) {
+        onSubmit(v);
+    }
+
+
+
+    @SuppressWarnings("")
+    public void onSubmit(View view) {
+        if(((EditText)getView().findViewById(R.id.editText)).getText().toString().trim().toLowerCase().length() <= 0) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Error!")
+                    .setMessage("You must answer the question!")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return;
+        }
+
+        if(((EditText)getView().findViewById(R.id.editText)).getText().toString().trim().toLowerCase().compareTo(getResources().getString(R.string.yellow)) == 0) {
+            ((QuizActivity)getActivity()).addCorrect();
+        }
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.quiz_fragment_container, TextQuestionFragment.newInstance(null,null))
+                .addToBackStack(null)
+                .commit();
     }
 
     // TODO: Rename method, update argument and hook method into UI event

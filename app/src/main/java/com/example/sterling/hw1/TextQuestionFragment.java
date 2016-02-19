@@ -1,12 +1,19 @@
 package com.example.sterling.hw1;
 
+import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.EditText;
+import android.widget.RadioGroup;
 
 
 /**
@@ -17,7 +24,7 @@ import android.view.ViewGroup;
  * Use the {@link TextQuestionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TextQuestionFragment extends Fragment {
+public class TextQuestionFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -26,6 +33,11 @@ public class TextQuestionFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Button submitButton;
+    private RadioGroup radioGroup;
+
+    private int selectedRadioId = -1;
 
     private OnFragmentInteractionListener mListener;
 
@@ -58,13 +70,82 @@ public class TextQuestionFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        ((QuizActivity)getActivity()).addQuestion();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_text_question, container, false);
+        View view = inflater.inflate(R.layout.fragment_text_question, container, false);
+
+        submitButton = (Button) view.findViewById(R.id.button3);
+        submitButton.setOnClickListener(this);
+
+        radioGroup = (RadioGroup) view.findViewById(R.id.radio_group);
+        radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                selectedRadioId = checkedId;
+            }
+        });
+
+        return view;
+    }
+
+    @Override
+    public void onClick(View v) {
+        onSubmit(v);
+    }
+
+
+
+    public void onSubmit(View view) {
+
+        if(selectedRadioId == -1) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Error!")
+                    .setMessage("You must select an answer!")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return;
+        }
+
+        if(R.id.radio_1492 == selectedRadioId) {
+            ((QuizActivity)getActivity()).addCorrect();
+        }
+
+        String resultString = "You answered " + Integer.toString(((QuizActivity)getActivity()).getCorrect())
+                            + " out of " + Integer.toString(((QuizActivity) getActivity()).getQuestions())
+                            + " questions correctly.";
+
+        new AlertDialog.Builder(getActivity())
+                .setCancelable(true)
+                .setTitle("Results")
+                .setMessage(resultString)
+                .setPositiveButton("Restart", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        ((QuizActivity)getActivity()).resetCounts();
+
+                        getFragmentManager()
+                                .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.quiz_fragment_container, ImageQuestionFragment.newInstance(null, null))
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                })
+                .setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ((QuizActivity)getActivity()).resetCounts();
+                        getActivity().finish();
+                    }
+                })
+                .show();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
